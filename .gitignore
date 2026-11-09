@@ -1,3 +1,7 @@
+# Client data and generated reports (never commit real records)
+data/
+reports/
+
 # History files
 .Rhistory
 .Rapp.history
