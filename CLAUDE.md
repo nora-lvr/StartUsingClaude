@@ -25,8 +25,8 @@ records, gives the photos to Claude, and gets back a report with tables and char
 - For experienced users: be brief and move faster, but still confirm before big steps.
 - Before doing anything that changes or creates files, say in one sentence what you are
   about to do.
-- Don't ask users to install software unless it's truly needed. If it is, explain why
-  in plain terms and wait for their OK.
+- Don't ask users to install software beyond this repo's own setup (section 6) unless
+  it's truly needed. If it is, explain why in plain terms and wait for their OK.
 
 ## 2. Species and operations
 
@@ -52,15 +52,39 @@ If the user gives breed-specific or their own values, use theirs and say so in t
 Records can come in as **photos of paper sheets**, **Excel/CSV files**, **exports from
 herd software**, or **typed or dictated notes**. Expect all of them.
 
-**Photos and handwriting — always check before you analyze:**
-1. Transcribe every row into a table.
+**Convert to CSV right away.** Whatever form the records arrive in, the first step is
+always to turn them into a **CSV file** of rectangular data: one row per animal (or per
+event), one column per field. Every later step (checking, analysis, charts, reports)
+works from that CSV, never from the photo or the original file again. The CSV also
+opens in Excel, so users can see and fix it themselves.
+
+CSV rules:
+- Column names are lowercase with underscores, e.g. `animal_id`, `preg_status`,
+  `fetal_age_days`, `check_date`, `group`, `notes`.
+- Dates in the CSV are `YYYY-MM-DD` so they sort and calculate correctly. Reports show
+  them as MM/DD/YYYY.
+- One kind of value per column: no units or comments mixed into number columns.
+  Put comments in `notes`.
+- Keep the original wording where it matters (e.g. `preg_status_as_written` next to a
+  cleaned `preg_status` of `pregnant` / `open` / `?`).
+- For photos, add `source_page` and `source_row` columns so every row can be traced
+  back to the sheet it came from, and an `unclear_fields` column naming any field
+  marked `?`.
+- File name: `<operation>_<record-type>_<YYYY-MM-DD>.csv`, e.g.
+  `smithranch_pregcheck_2026-10-14.csv`.
+- In Claude Code, save it in the `data/` folder. In a chat, give it to the user as a
+  downloadable file.
+
+**Photos and handwriting: always check before you analyze:**
+1. Transcribe every row straight into the CSV.
 2. **Never guess** an unclear entry. Mark it `?` and list all unclear entries
    separately (page and row number, what you think it might be).
-3. Show the user the transcribed table and ask them to check and correct it.
+3. Show the user the table and ask them to check and correct it. Make corrections
+   in the CSV.
 4. Only analyze after they confirm.
 
 **For all data:**
-- Never change or overwrite the user's original files. Save cleaned data as a new file.
+- Never change or overwrite the user's original files. Cleaned data is a new CSV.
 - Report anything odd instead of quietly fixing it: duplicate IDs, impossible dates,
   missing values, fetal ages longer than gestation, and so on.
 - Units: default to **pounds** and **US dates (MM/DD/YYYY)**. If the data uses other
@@ -119,6 +143,18 @@ add data notes, and ask the format.
 
 ## 6. Claude Code only: this repo
 
+**Python for reports.** Reports are made with Python from the `.venv` folder in this
+repo. Its packages are listed in `requirements.txt`.
+- Run Python as `.venv/Scripts/python` on Windows or `.venv/bin/python` on Mac, from
+  the repo root. Don't use any other Python on the computer.
+- If `.venv` is missing or a package won't load, the user hasn't run setup yet. Explain
+  in one or two sentences, then offer to run it for them:
+  `powershell -NoProfile -ExecutionPolicy Bypass -File setup/setup-windows.ps1 -NoPause`
+  on Windows, `bash setup/setup-mac.command < /dev/null` on Mac. Or they can
+  double-click `setup-windows.bat` or `setup-mac.command` in the `setup` folder.
+- If a report needs a package that isn't in `requirements.txt`, add it there and re-run
+  setup. Don't install packages any other way.
+
 **Privacy: client data never goes into git.**
 - Users' own records, photos and reports go in `data/` and `reports/`. Both are in
   `.gitignore`.
@@ -127,7 +163,8 @@ add data notes, and ask the format.
 - Before any commit, check that no real data is staged.
 
 **Intended layout** (folders are created as content is added):
-- `data/`: user's own records and photos (not committed)
+- `setup/`: double-click setup scripts that install Python and the report packages
+- `data/`: user's own records, photos and the CSVs made from them (not committed)
 - `reports/`: generated reports (not committed)
 - `examples/`: made-up sample records and example reports
 - `guides/`: step-by-step how-tos for different skill levels

@@ -2,6 +2,10 @@
 data/
 reports/
 
+# Python set up by the scripts in setup/
+.venv/
+__pycache__/
+
 # History files
 .Rhistory
 .Rapp.history

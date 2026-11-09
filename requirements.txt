@@ -1,0 +1,7 @@
+# Python packages Claude uses to make reports.
+# Installed by the setup scripts in setup/.
+pandas>=2.2        # reading and organizing record tables (CSV, Excel)
+matplotlib>=3.8    # charts
+openpyxl>=3.1      # Excel workbooks
+python-docx>=1.1   # Word documents
+fpdf2>=2.7         # PDF reports
